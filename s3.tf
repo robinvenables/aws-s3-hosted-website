@@ -19,14 +19,18 @@ resource "aws_s3_bucket" "root_site" {
     ]
 }
 POLICY
+
   website {
-    index_document = "index.html"
-    error_document = "404.html"
+    index_document = var.pages.index
+    error_document = var.pages.error
   }
 
-  logging {
-    target_bucket = "${data.aws_iam_account_alias.this_account.account_alias}-log"
-    target_prefix = "${var.root_domain_name}/"
+  dynamic "logging" {
+    for_each = var.access_logging ? [1] : []
+    content {
+      target_bucket = var.logging_bucket.name
+      target_prefix = var.logging_bucket.prefix
+    }
   }
 }
 

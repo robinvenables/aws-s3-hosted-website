@@ -1,15 +1,15 @@
-resource "aws_acm_certificate" "new_certificate" {
-  provider = aws.us-east-1
-  domain_name = var.root_domain_name
-  subject_alternative_names = ["*.${var.root_domain_name}"]
-  validation_method = "DNS"
-	lifecycle {
-		create_before_destroy = true
-	}
+module "get_certificate" {
+  source = "git@github.com:robinvenables/get_aws_dns_validated_certificate"
+
+  dns_domain_name         = var.root_domain_name
+  certificate_domain_name = var.root_domain_name
+  certificate_san         = ["*.${var.root_domain_name}"]
+  certificate_tags = {
+    Name = var.root_domain_name
+  }
+  is_cloudfront_certificate = true
 }
 
-resource "aws_acm_certificate_validation" "domain_validation" {
-  provider                = aws.us-east-1
-  certificate_arn         = aws_acm_certificate.new_certificate.arn
-  validation_record_fqdns = [for f in aws_route53_record.validation_records : f.fqdn]
+locals {
+  certificate_arn = module.get_certificate.certificate_arn
 }

@@ -12,7 +12,7 @@ resource "aws_cloudfront_distribution" "root_site_cdn" {
   }
 
   enabled             = true
-  default_root_object = "index.html"
+  default_root_object = var.pages.index
 
   default_cache_behavior {
     viewer_protocol_policy = "redirect-to-https"
@@ -41,11 +41,11 @@ resource "aws_cloudfront_distribution" "root_site_cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.new_certificate.arn
+    acm_certificate_arn = local.certificate_arn
     ssl_support_method  = "sni-only"
   }
 
-  depends_on = [aws_acm_certificate_validation.domain_validation]
+  depends_on = [local.certificate_arn]
 }
 
 resource "aws_cloudfront_distribution" "www_site_cdn" {
@@ -62,7 +62,7 @@ resource "aws_cloudfront_distribution" "www_site_cdn" {
   }
 
   enabled             = true
-  default_root_object = "index.html"
+  default_root_object = var.pages.index
 
   default_cache_behavior {
     viewer_protocol_policy = "redirect-to-https"
@@ -91,9 +91,9 @@ resource "aws_cloudfront_distribution" "www_site_cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.new_certificate.arn
+    acm_certificate_arn = local.certificate_arn
     ssl_support_method  = "sni-only"
   }
 
-  depends_on = [aws_acm_certificate_validation.domain_validation]
+  depends_on = [local.certificate_arn]
 }
