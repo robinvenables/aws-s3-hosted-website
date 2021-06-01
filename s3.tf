@@ -20,6 +20,14 @@ resource "aws_s3_bucket" "root_site" {
 }
 POLICY
 
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
   website {
     index_document = var.pages.index
     error_document = var.pages.error
